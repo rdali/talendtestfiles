@@ -1,0 +1,23 @@
+FROM rdali/talend:centos-java11
+
+ARG talend_job=TalendTestJob
+ARG talend_version=0.1
+
+ENV TALEND_JOB ${talend_job}
+ENV TALEND_VERSION ${talend_version}
+ENV ARGS ""
+
+WORKDIR /opt/talend
+
+COPY ${TALEND_JOB}_${talend_version}.zip .
+
+### Install Talend Job
+RUN yum install -y unzip && \
+    unzip ${TALEND_JOB}_${TALEND_VERSION}.zip && \
+    rm -rf ${TALEND_JOB}_${TALEND_VERSION}.zip && \
+    chmod +x ${TALEND_JOB}/${TALEND_JOB}_run.sh
+
+VOLUME /data
+
+CMD ["/bin/bash","-c","${TALEND_JOB}/${TALEND_JOB}_run.sh ${ARGS}"]
+
